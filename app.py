@@ -25,7 +25,7 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
         self.save_path = None
         self.active_page = None
         self.color_mode = None
-        self.resized.connect(self.bacground_resize)
+        self.resized.connect(self.background_resize)
 
     def resizeEvent(self, event):
         self.resized.emit()
