@@ -20,7 +20,7 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
             Color mode of output images
             Possible modes: ['rgb', 'rgba', 'grayscale', 'binary']
     Returns:
-        converted (list): list of converted pages
+        converted (list of np.ndarray): list of converted pages
     """
     transparent = color_mode == 'rgba'
     grayscale = color_mode == 'grayscale'
@@ -40,15 +40,13 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
             converted = [cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
                          for im in converted]
     elif color_mode == 'binary':
-        converted = [cv2.cvtColor(cv2.threshold(
-            cv2.cvtColor(np.array(im), cv2.COLOR_RGB2GRAY), 128,
-            255, cv2.THRESH_BINARY)[1], cv2.COLOR_GRAY2BGR) for im in converted]
+        converted = [cv2.threshold(
+            cv2.cvtColor(np.array(im), cv2.COLOR_RGB2GRAY), 128, 255,
+            cv2.THRESH_BINARY)[1] for im in converted]
     else:
         # Grayscale
-        converted = [
-            cv2.cvtColor(cv2.cvtColor(np.array(im), cv2.COLOR_RGB2GRAY),
-                         cv2.COLOR_GRAY2BGR)
-            for im in converted]
+        converted = [cv2.cvtColor(np.array(im), cv2.COLOR_RGB2GRAY)
+                     for im in converted]
     return converted
 
 
