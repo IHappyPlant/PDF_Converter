@@ -69,15 +69,15 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
                 pass
 
     def display_active_page(self):
+        # BGR888 for rgb, binary and grayscale formats
+        color_format = QImage.Format_BGR888
+
+        # TODO: fix missing rgba displaying
         if self.color_mode == 'rgba':
-            frmt = QImage.Format_RGBA8888
-        elif self.color_mode == 'rgb':
-            frmt = QImage.Format_RGB888
-        elif self.color_mode == 'grayscale' or self.color_mode == 'binary':
-            frmt = QImage.Format_Grayscale8
+            color_format = QImage.Format_RGBA8888
         cur_img = self.processed[self.active_page - 1]
         img = QImage(cur_img, cur_img.shape[1], cur_img.shape[0],
-                     cur_img.shape[1] * 3, frmt)
+                     cur_img.shape[1] * 3, color_format)
         img = img.smoothScaled(self.display_page_label.width(),
                                self.display_page_label.height())
         img = QPixmap(img)
