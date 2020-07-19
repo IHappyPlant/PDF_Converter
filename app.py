@@ -64,8 +64,7 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
                 self.save_path = QFileDialog.getExistingDirectoryUrl(
                     caption='Save to').path()
                 for i, page in enumerate(self.processed):
-                    name = '{}_{}.{}'.format(self.file_name, str(i),
-                                             self.image_format)
+                    name = f'{self.file_name}_{i}.{self.image_format}'
                     cv2.imwrite(name, page)
             except NotADirectoryError:
                 pass
@@ -83,8 +82,8 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
         img = img.smoothScaled(self.display_page_label.width(),
                                self.display_page_label.height())
         img = QPixmap(img)
-        self.page_numbers_label.setText('Page {} of {}'.format(
-            self.active_page, len(self.processed)))
+        self.page_numbers_label.setText(f'Page {self.active_page} of '
+                                        f'{len(self.processed)}')
         self.display_page_label.setPixmap(img)
         self.display_page_label.show()
 
