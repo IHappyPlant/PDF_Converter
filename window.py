@@ -129,7 +129,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Converter"))
         self.select_file_label.setText(_translate("MainWindow", "File not selected"))
         self.select_file_btn.setText(_translate("MainWindow", "Select file"))
         self.dpi_label.setText(_translate("MainWindow", "DPI:"))
