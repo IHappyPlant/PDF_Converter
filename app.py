@@ -1,3 +1,4 @@
+from PyQt5 import QtCore
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from PyQt5.QtGui import QImage, QPixmap
 import window
@@ -7,6 +8,8 @@ import cv2
 
 
 class MyApp(QMainWindow, window.Ui_MainWindow):
+    resized = QtCore.pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -22,6 +25,15 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
         self.save_path = None
         self.active_page = None
         self.color_mode = None
+        self.resized.connect(self.bacground_resize)
+
+    def resizeEvent(self, event):
+        self.resized.emit()
+        return super(MyApp, self).resizeEvent(event)
+
+    def bacground_resize(self):
+        if self.active_page:
+            self.display_active_page()
 
     def select_file(self):
         try:
