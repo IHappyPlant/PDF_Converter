@@ -1,7 +1,8 @@
-from pdf2image import convert_from_bytes
-import numpy as np
-import cv2
 import os
+
+import cv2
+import numpy as np
+from pdf2image import convert_from_bytes
 
 
 def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
