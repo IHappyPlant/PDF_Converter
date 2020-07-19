@@ -5,8 +5,8 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 
-import window
-from utils import convert, get_file_name
+from converter import window
+from converter.utils import convert, get_file_name
 
 
 class MyApp(QMainWindow, window.Ui_MainWindow):
