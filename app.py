@@ -31,7 +31,7 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
         self.resized.emit()
         return super(MyApp, self).resizeEvent(event)
 
-    def bacground_resize(self):
+    def background_resize(self):
         if self.active_page:
             self.display_active_page()
 
@@ -69,7 +69,7 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
                 pass
 
     def display_active_page(self):
-        if self.color_mode == 'rbga':
+        if self.color_mode == 'rgba':
             frmt = QImage.Format_RGBA8888
         elif self.color_mode == 'rgb':
             frmt = QImage.Format_RGB888
