@@ -26,7 +26,7 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
 
     with open(file, 'rb') as f:
         file = f.read()
-    converted = convert_from_bytes(file, dpi, fmt='ppm',
+    converted = convert_from_bytes(file, dpi, fmt=image_format,
                                    transparent=transparent, grayscale=grayscale)
     if color_mode == 'rgb':
         converted = [cv2.cvtColor(np.array(im), cv2.COLOR_RGB2BGR)
