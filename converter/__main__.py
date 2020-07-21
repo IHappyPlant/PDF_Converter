@@ -46,6 +46,9 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
                 self.select_file_label.setText('File selected')
                 self.file_path = table_path
                 self.file_name = get_file_name(table_path)
+                self.display_page_label.clear()
+                self.display_page_label.setStyleSheet(
+                    "background-color: white;")
         except FileNotFoundError:
             self.select_file_label.setText('File selected')
 
