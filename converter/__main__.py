@@ -66,9 +66,9 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
         if self.processed:
             try:
                 self.save_path = QFileDialog.getExistingDirectoryUrl(
-                    caption='Save to').path()
+                    caption='Save to').toLocalFile()
                 for i, page in enumerate(self.processed):
-                    name = f'{self.file_name}_{i}.{self.image_format}'
+                    name = f'{self.save_path}/{self.file_name}_{i}.{self.image_format}'
                     imwrite(name, page)
             except NotADirectoryError:
                 pass
