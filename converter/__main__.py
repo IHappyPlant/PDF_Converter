@@ -1,7 +1,7 @@
 import sys
 
-import cv2
-from PyQt5 import QtCore
+from cv2 import imwrite
+from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 
@@ -10,7 +10,7 @@ from converter.utils import convert, get_file_name
 
 
 class MyApp(QMainWindow, window.Ui_MainWindow):
-    resized = QtCore.pyqtSignal()
+    resized = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -66,7 +66,7 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
                     caption='Save to').path()
                 for i, page in enumerate(self.processed):
                     name = f'{self.file_name}_{i}.{self.image_format}'
-                    cv2.imwrite(name, page)
+                    imwrite(name, page)
             except NotADirectoryError:
                 pass
 
