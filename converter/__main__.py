@@ -40,7 +40,8 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
     def select_file(self):
         try:
             table_path = \
-                QFileDialog.getOpenFileUrl(caption='Select file')[0].path()
+                QFileDialog.getOpenFileUrl(caption='Select file')[0]. \
+                toLocalFile()
             if table_path.endswith('.pdf'):
                 self.select_file_label.setText('File selected')
                 self.file_path = table_path
