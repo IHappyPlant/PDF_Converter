@@ -1,16 +1,22 @@
+# coding=utf-8
+"""
+This module contains code for GUI of the converter
+"""
 import sys
 
-from cv2 import imwrite
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
+from cv2 import imwrite
 
 from converter import window
 from converter.utils import convert, get_file_name
 
 
-class MyApp(QMainWindow, window.Ui_MainWindow):
-    resized = pyqtSignal()
+class ConverterGUI(QMainWindow, window.Ui_MainWindow):
+    """
+    This is a class for GUI of the pdf converter. It provides window, buttons
+    and functions to handle them.
+    """
 
     def __init__(self):
         super().__init__()
@@ -27,17 +33,19 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
         self.save_path = None
         self.active_page = None
         self.color_mode = None
-        self.resized.connect(self.background_resize)
 
     def resizeEvent(self, event):
-        self.resized.emit()
-        return super(MyApp, self).resizeEvent(event)
+        """
+        Resize image in display_page_label when main window is resizing
 
-    def background_resize(self):
+        Args:
+            event (PyQt5.QtGui.QResizeEvent.QResizeEvent): resize event
+        """
         if self.active_page:
             self.display_active_page()
 
     def select_file(self):
+        """Set path to pdf file to handle and get its name"""
         try:
             table_path = \
                 QFileDialog.getOpenFileUrl(caption='Select file')[0]. \
@@ -53,6 +61,7 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
             self.select_file_label.setText('File selected')
 
     def process_file(self):
+        """Convert selected pdf file to images"""
         if self.file_path:
             dpi = int(self.dpi_box.currentText())
             self.color_mode = self.color_mode_box.currentText().lower()
@@ -63,17 +72,20 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
             self.display_active_page()
 
     def save_file(self):
+        """Save images from pdf file to selected folder"""
         if self.processed:
             try:
                 self.save_path = QFileDialog.getExistingDirectoryUrl(
                     caption='Save to').toLocalFile()
                 for i, page in enumerate(self.processed):
-                    name = f'{self.save_path}/{self.file_name}_{i}.{self.image_format}'
+                    name = f'{self.save_path}/{self.file_name}_{i}.' \
+                           f'{self.image_format}'
                     imwrite(name, page)
             except NotADirectoryError:
                 pass
 
     def display_active_page(self):
+        """Draw currently observed image in display_page_label"""
         cur_img = self.processed[self.active_page - 1]
         channels = cur_img.shape[2] if len(cur_img.shape) > 2 else 1
 
@@ -96,24 +108,22 @@ class MyApp(QMainWindow, window.Ui_MainWindow):
         self.display_page_label.show()
 
     def to_next_page(self):
+        """Draw next image from list of images taken from pdf"""
         if self.active_page:
             if self.active_page < len(self.processed):
                 self.active_page += 1
                 self.display_active_page()
 
     def to_prev_page(self):
+        """Draw previous image from list of images taken from pdf"""
         if self.active_page:
             if self.active_page > 1:
                 self.active_page -= 1
                 self.display_active_page()
 
 
-def main():
+if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window_ = MyApp()
+    window_ = ConverterGUI()
     window_.show()
     app.exec_()
-
-
-if __name__ == '__main__':
-    main()
