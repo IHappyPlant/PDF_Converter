@@ -33,7 +33,8 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
         file = f.read()
     # Convert document to Pillow images
     converted = convert_from_bytes(file, dpi, fmt=image_format,
-                                   transparent=transparent, grayscale=grayscale)
+                                   transparent=transparent,
+                                   grayscale=grayscale)
     # Convert colors from RGB(A) to BGR(A)
     if color_mode == 'rgb':
         converted = [cv2.cvtColor(array(im), cv2.COLOR_RGB2BGR)
