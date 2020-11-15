@@ -25,7 +25,7 @@ setup(
     python_requires='>=3.6',
     keywords="pdf jpg png converter image format gui application app",
     classifiers=[
-        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
