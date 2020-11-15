@@ -5,6 +5,8 @@ format.
 With this application, you can easily convert PDF documents, even if they have 
 multiple pages, to images.  
 
+![PDF converter screenshot](imgs/pdf_converter_screenshot.png)
+
 ## Installation
 ### Python
 To install this application directly to Python, you must first clone this
@@ -32,7 +34,7 @@ install application [directly to Python](#python).
  Just download and run latest application release for Linux, or install
  application [directly to Python](#python).
  
- ### Other Linux distributives
+ ### Other Linux distros
  It is similar to [Debian / Ubuntu](#debian--ubuntu) installation, but you may
  need first install ```poppler-utils``` package with your package manager.
  
