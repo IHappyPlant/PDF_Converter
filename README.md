@@ -13,7 +13,7 @@ To install this application directly to Python, you must first clone this
 repository using 
 command:
 ```commandline
-git clone https://github.com/IHappyPlant/Pdf_Converter.git
+git clone https://github.com/IHappyPlant/PDF_Converter.git
 ```
 Then, install converter to Python with command:
 ```commandline
