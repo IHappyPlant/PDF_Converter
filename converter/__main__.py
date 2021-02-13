@@ -73,10 +73,9 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
     def process_file(self):
         """Convert selected pdf file to images"""
         # TODO: run this function in separate thread
-        dpi = int(self.dpi_box.currentText())
         self.color_mode = self.color_mode_box.currentText().lower()
         self.image_format = self.image_format_box.currentText().lower()
-        self.processed = convert(self.file_path, dpi, self.image_format,
+        self.processed = convert(self.file_path, self.dpi, self.image_format,
                                  self.color_mode)
         self.active_page = 1
         self.display_active_page()
@@ -85,6 +84,14 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         if self.active_page != len(self.processed):
             self.to_next_btn.setDisabled(False)
         self.process_doc_btn.setDisabled(True)
+
+    @property
+    def dpi(self):
+        """
+        :return: current DPI
+        :rtype: int
+        """
+        return int(self.dpi_box.currentText())
 
     def save_file(self):
         """Save images from pdf file to selected folder"""
