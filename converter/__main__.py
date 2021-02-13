@@ -107,6 +107,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 
     def save_file(self):
         """Save images from pdf file to selected folder"""
+        # TODO: run this function in separate thread
         try:
             self.save_path = QFileDialog.getExistingDirectoryUrl(
                 caption='Save to').toLocalFile()
