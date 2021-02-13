@@ -24,7 +24,7 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
     transparent = color_mode == 'rgba'
     grayscale = color_mode == 'grayscale'
 
-    # Convert document to Pillow images
+    # Convert document to list of Pillow images
     converted = convert_from_path(file, dpi, fmt=image_format,
                                   transparent=transparent,
                                   grayscale=grayscale)
