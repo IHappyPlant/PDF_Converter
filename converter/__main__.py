@@ -91,16 +91,15 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 
     def save_file(self):
         """Save images from pdf file to selected folder"""
-        if self.processed:
-            try:
-                self.save_path = QFileDialog.getExistingDirectoryUrl(
-                    caption='Save to').toLocalFile()
-                for i, page in enumerate(self.processed):
-                    name = f'{self.save_path}/{self.file_name}_{i}.' \
-                           f'{self.image_format}'
-                    imwrite(name, page)
-            except NotADirectoryError:
-                pass
+        try:
+            self.save_path = QFileDialog.getExistingDirectoryUrl(
+                caption='Save to').toLocalFile()
+            for i, page in enumerate(self.processed):
+                name = f'{self.save_path}/{self.file_name}_{i}.' \
+                       f'{self.image_format}'
+                imwrite(name, page)
+        except NotADirectoryError:
+            pass
 
     def display_active_page(self):
         """Draw currently observed image in display_page_label"""
