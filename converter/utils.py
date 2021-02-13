@@ -2,7 +2,7 @@
 from os.path import basename, splitext
 
 from numpy import array
-from pdf2image import convert_from_bytes
+from pdf2image import convert_from_path
 
 
 def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
@@ -24,12 +24,10 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
     transparent = color_mode == 'rgba'
     grayscale = color_mode == 'grayscale'
 
-    with open(file, 'rb') as f:
-        file = f.read()
     # Convert document to Pillow images
-    converted = convert_from_bytes(file, dpi, fmt=image_format,
-                                   transparent=transparent,
-                                   grayscale=grayscale)
+    converted = convert_from_path(file, dpi, fmt=image_format,
+                                  transparent=transparent,
+                                  grayscale=grayscale)
     # Convert colors from RGB(A) to BGR(A)
     if color_mode == 'rgb':
         converted = [im.convert('RGB') for im in converted]
