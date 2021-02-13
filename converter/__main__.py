@@ -64,7 +64,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 
     def on_box_item_change(self):
         """Handle changing active items in comboboxes"""
-        if not self.process_doc_btn.isEnabled():
+        if not self.process_doc_btn.isEnabled() and self.file_path:
             self.process_doc_btn.setDisabled(False)
 
     def select_file(self):
