@@ -119,7 +119,6 @@ class Ui_MainWindow(object):
         self.display_page_label.setObjectName("display_page_label")
         self.display_layout.addWidget(self.display_page_label)
         self.page_numbers_label = QtWidgets.QLabel(self.centralwidget)
-        self.page_numbers_label.setText("")
         self.page_numbers_label.setAlignment(QtCore.Qt.AlignCenter)
         self.page_numbers_label.setObjectName("page_numbers_label")
         self.display_layout.addWidget(self.page_numbers_label)
@@ -174,5 +173,7 @@ class Ui_MainWindow(object):
         self.image_format_box.setItemText(1, _translate("MainWindow", "PNG"))
         self.process_doc_btn.setText(_translate("MainWindow", "Process file"))
         self.save_file_btn.setText(_translate("MainWindow", "Save to..."))
+        self.page_numbers_label.setText(
+            _translate("MainWindow", "Page 0 of 0"))
         self.to_prev_btn.setText(_translate("MainWindow", "Previous Page"))
         self.to_next_btn.setText(_translate("MainWindow", "Next Page"))

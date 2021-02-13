@@ -145,7 +145,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.page_numbers_label.setText(
                 f'Page {self.active_page_number} of {self.pages_count}')
         else:
-            self.page_numbers_label.clear()
+            self.page_numbers_label.setText('Page 0 of 0')
 
     def to_next_page(self):
         """Draw next image from list of images taken from pdf"""
