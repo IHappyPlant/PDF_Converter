@@ -88,7 +88,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         """Set pages info label to default state"""
         self.display_page_label.clear()
         self.display_page_label.setStyleSheet("background-color: white;")
-        self.page_numbers_label.setText('Page of')
+        self._update_page_number_info()
 
     def process_file(self):
         """Convert selected pdf file to images"""
@@ -124,21 +124,28 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 
         # BGR888 for rgb format
         color_format = QImage.Format_BGR888
-        if self.color_mode == 'rgba':
-            color_format = QImage.Format_ARGB32 if self.image_format == 'png' \
-                else QImage.Format_BGR888
+        if self.color_mode == 'rgba' and self.image_format == 'png':
+            color_format = QImage.Format_ARGB32
         elif self.color_mode == 'grayscale' or self.color_mode == 'binary':
             color_format = QImage.Format_Grayscale8
 
         img = QImage(cur_img, cur_img.shape[1], cur_img.shape[0],
-                     channels * cur_img.shape[1], color_format)
-        img = img.smoothScaled(self.display_page_label.width(),
-                               self.display_page_label.height())
-        img = QPixmap(img)
-        self.page_numbers_label.setText(
-            f'Page {self.active_page_number} of {self.pages_count}')
-        self.display_page_label.setPixmap(img)
-        self.display_page_label.show()
+                     channels * cur_img.shape[1], color_format).smoothScaled(
+            self.display_page_label.width(), self.display_page_label.height())
+        pixmap = QPixmap(img)
+        self.display_page_label.setPixmap(pixmap)
+        self._update_page_number_info()
+
+    def _update_page_number_info(self):
+        """
+        Update page numbers label text with currently active page
+        number and pages count it it exists. Else, clear label text.
+        """
+        if self.active_page_number and self.pages_count:
+            self.page_numbers_label.setText(
+                f'Page {self.active_page_number} of {self.pages_count}')
+        else:
+            self.page_numbers_label.clear()
 
     def to_next_page(self):
         """Draw next image from list of images taken from pdf"""

@@ -266,7 +266,7 @@
       <item>
        <widget class="QLabel" name="page_numbers_label">
         <property name="text">
-         <string>Page  of  </string>
+         <string/>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
