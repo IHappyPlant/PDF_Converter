@@ -58,9 +58,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.select_file_label.setText('File selected')
             self.file_path = file_path
             self.file_name = get_file_name(file_path)
-            self.display_page_label.clear()
-            self.display_page_label.setStyleSheet("background-color: white;")
-            self.page_numbers_label.setText('Page of')
+            self._clear_page_label()
 
             # enable document processing button and boxes and disable
             # save button
@@ -69,6 +67,12 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.image_format_box.setDisabled(False)
             self.process_doc_btn.setDisabled(False)
             self.save_file_btn.setDisabled(True)
+
+    def _clear_page_label(self):
+        """Set pages info label to default state"""
+        self.display_page_label.clear()
+        self.display_page_label.setStyleSheet("background-color: white;")
+        self.page_numbers_label.setText('Page of')
 
     def process_file(self):
         """Convert selected pdf file to images"""
