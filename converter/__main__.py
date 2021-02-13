@@ -142,23 +142,25 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 
     def to_next_page(self):
         """Draw next image from list of images taken from pdf"""
-        if self.active_page_number < self.pages_count:
-            self.active_page_number += 1
-            self.display_active_page()
-        if self.active_page_number == self.pages_count:
-            self.to_next_btn.setDisabled(True)
-        if not self.to_prev_btn.isEnabled():
-            self.to_prev_btn.setDisabled(False)
+        if self.active_page_number:
+            if self.active_page_number < self.pages_count:
+                self.active_page_number += 1
+                self.display_active_page()
+            if self.active_page_number == self.pages_count:
+                self.to_next_btn.setDisabled(True)
+            if not self.to_prev_btn.isEnabled():
+                self.to_prev_btn.setDisabled(False)
 
     def to_prev_page(self):
         """Draw previous image from list of images taken from pdf"""
-        if self.active_page_number > 1:
-            self.active_page_number -= 1
-            self.display_active_page()
-        if self.active_page_number == 1:
-            self.to_prev_btn.setDisabled(True)
-        if not self.to_next_btn.isEnabled():
-            self.to_next_btn.setDisabled(False)
+        if self.active_page_number:
+            if self.active_page_number > 1:
+                self.active_page_number -= 1
+                self.display_active_page()
+            if self.active_page_number == 1:
+                self.to_prev_btn.setDisabled(True)
+            if not self.to_next_btn.isEnabled():
+                self.to_next_btn.setDisabled(False)
 
 
 if __name__ == '__main__':
