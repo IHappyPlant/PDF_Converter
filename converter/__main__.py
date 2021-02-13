@@ -1,12 +1,9 @@
-# coding=utf-8
-"""
-This module contains code for GUI of the converter
-"""
+"""This module contains code for GUI of the converter"""
 import sys
 
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from cv2 import imwrite
+from PyQt5.QtGui import QImage, QPixmap
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow
 
 from converter import window
 from converter.utils import convert, get_file_name
@@ -14,8 +11,8 @@ from converter.utils import convert, get_file_name
 
 class ConverterGUI(QMainWindow, window.Ui_MainWindow):
     """
-    This is a class for GUI of the pdf converter. It provides window, buttons
-    and functions to handle them.
+    This is a class for GUI of the pdf converter. It provides window,
+    buttons and functions to handle them.
     """
 
     def __init__(self):
