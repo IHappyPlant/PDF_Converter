@@ -33,7 +33,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self.processed = None
         self.image_format = None
         self.save_path = None
-        self.active_page = None
+        self.active_page_number = None
         self.color_mode = None
 
     @property
@@ -59,7 +59,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         :param PyQt5.QtGui.QResizeEvent.QResizeEvent event:
             resize event
         """
-        if self.active_page:
+        if self.active_page_number:
             self.display_active_page()
 
     def on_box_item_change(self):
@@ -97,11 +97,11 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self.image_format = self.image_format_box.currentText().lower()
         self.processed = convert(self.file_path, self.dpi, self.image_format,
                                  self.color_mode)
-        self.active_page = 1
+        self.active_page_number = 1
         self.display_active_page()
 
         self.save_file_btn.setDisabled(False)
-        if self.active_page != self.pages_count:
+        if self.active_page_number != self.pages_count:
             self.to_next_btn.setDisabled(False)
         self.process_doc_btn.setDisabled(True)
 
@@ -119,7 +119,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 
     def display_active_page(self):
         """Draw currently observed image in display_page_label"""
-        cur_img = self.processed[self.active_page - 1]
+        cur_img = self.processed[self.active_page_number - 1]
         channels = cur_img.shape[2] if len(cur_img.shape) > 2 else 1
 
         # BGR888 for rgb format
@@ -136,26 +136,26 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
                                self.display_page_label.height())
         img = QPixmap(img)
         self.page_numbers_label.setText(
-            f'Page {self.active_page} of {self.pages_count}')
+            f'Page {self.active_page_number} of {self.pages_count}')
         self.display_page_label.setPixmap(img)
         self.display_page_label.show()
 
     def to_next_page(self):
         """Draw next image from list of images taken from pdf"""
-        if self.active_page < self.pages_count:
-            self.active_page += 1
+        if self.active_page_number < self.pages_count:
+            self.active_page_number += 1
             self.display_active_page()
-        if self.active_page == self.pages_count:
+        if self.active_page_number == self.pages_count:
             self.to_next_btn.setDisabled(True)
         if not self.to_prev_btn.isEnabled():
             self.to_prev_btn.setDisabled(False)
 
     def to_prev_page(self):
         """Draw previous image from list of images taken from pdf"""
-        if self.active_page > 1:
-            self.active_page -= 1
+        if self.active_page_number > 1:
+            self.active_page_number -= 1
             self.display_active_page()
-        if self.active_page == 1:
+        if self.active_page_number == 1:
             self.to_prev_btn.setDisabled(True)
         if not self.to_next_btn.isEnabled():
             self.to_next_btn.setDisabled(False)
