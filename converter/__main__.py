@@ -36,6 +36,22 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self.active_page = None
         self.color_mode = None
 
+    @property
+    def dpi(self):
+        """
+        :return: current DPI
+        :rtype: int
+        """
+        return int(self.dpi_box.currentText())
+
+    @property
+    def pages_count(self):
+        """
+        :return: Number of document pages
+        :rtype: int
+        """
+        return len(self.processed) if self.processed else None
+
     def on_display_page_resize(self, event):  # noqa
         """
         Resize image in display_page_label when it is resizing
@@ -85,17 +101,9 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self.display_active_page()
 
         self.save_file_btn.setDisabled(False)
-        if self.active_page != len(self.processed):
+        if self.active_page != self.pages_count:
             self.to_next_btn.setDisabled(False)
         self.process_doc_btn.setDisabled(True)
-
-    @property
-    def dpi(self):
-        """
-        :return: current DPI
-        :rtype: int
-        """
-        return int(self.dpi_box.currentText())
 
     def save_file(self):
         """Save images from pdf file to selected folder"""
@@ -127,17 +135,17 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         img = img.smoothScaled(self.display_page_label.width(),
                                self.display_page_label.height())
         img = QPixmap(img)
-        self.page_numbers_label.setText(f'Page {self.active_page} of '
-                                        f'{len(self.processed)}')
+        self.page_numbers_label.setText(
+            f'Page {self.active_page} of {self.pages_count}')
         self.display_page_label.setPixmap(img)
         self.display_page_label.show()
 
     def to_next_page(self):
         """Draw next image from list of images taken from pdf"""
-        if self.active_page < len(self.processed):
+        if self.active_page < self.pages_count:
             self.active_page += 1
             self.display_active_page()
-        if self.active_page == len(self.processed):
+        if self.active_page == self.pages_count:
             self.to_next_btn.setDisabled(True)
         if not self.to_prev_btn.isEnabled():
             self.to_prev_btn.setDisabled(False)
