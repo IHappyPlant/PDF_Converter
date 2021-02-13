@@ -1,7 +1,7 @@
 """This module contains code for GUI of the converter"""
 import sys
 
-from cv2 import imwrite
+from PIL import Image
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow
 
@@ -111,9 +111,9 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.save_path = QFileDialog.getExistingDirectoryUrl(
                 caption='Save to').toLocalFile()
             for i, page in enumerate(self.processed):
-                name = f'{self.save_path}/{self.file_name}_{i}.' \
-                       f'{self.image_format}'
-                imwrite(name, page)
+                save_path = f'{self.save_path}/{self.file_name}_{i}.' \
+                            f'{self.image_format}'
+                Image.fromarray(page).save(save_path)
         except NotADirectoryError:
             pass
 
@@ -123,9 +123,9 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         channels = cur_img.shape[2] if len(cur_img.shape) > 2 else 1
 
         # BGR888 for rgb format
-        color_format = QImage.Format_BGR888
+        color_format = QImage.Format_RGB888
         if self.color_mode == 'rgba' and self.image_format == 'png':
-            color_format = QImage.Format_ARGB32
+            color_format = QImage.Format_RGBA8888
         elif self.color_mode == 'grayscale' or self.color_mode == 'binary':
             color_format = QImage.Format_Grayscale8
 
