@@ -97,13 +97,13 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self.image_format = self.image_format_box.currentText().lower()
         self.processed = convert(self.file_path, self.dpi, self.image_format,
                                  self.color_mode)
-        self.active_page_number = 1
-        self.display_active_page()
 
+        self.active_page_number = 1
         self.save_file_btn.setDisabled(False)
         if self.active_page_number != self.pages_count:
             self.to_next_btn.setDisabled(False)
         self.process_doc_btn.setDisabled(True)
+        self.display_active_page()
 
     def save_file(self):
         """Save images from pdf file to selected folder"""
