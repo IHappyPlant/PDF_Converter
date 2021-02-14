@@ -29,10 +29,8 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.on_box_item_change)
         self.display_page_label.resizeEvent = self.on_display_page_resize
         self.file_path = None
-        self.file_name = None
         self.processed = None
         self.image_format = None
-        self.save_path = None
         self.active_page_number = None
         self.color_mode = None
 
@@ -73,7 +71,6 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         if file_path.endswith('.pdf'):
             self.select_file_label.setText('File selected')
             self.file_path = file_path
-            self.file_name = get_file_name(file_path)
             self._clear_page_label()
 
             # enable document processing button and boxes and disable
@@ -109,12 +106,12 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         """Save images from pdf file to selected folder"""
         # TODO: run this function in separate thread
         try:
-            self.save_path = QFileDialog.getExistingDirectoryUrl(
-                caption='Save to').toLocalFile()
+            save_dir = QFileDialog.getExistingDirectoryUrl(
+                caption='Select saving directory').toLocalFile()
             for i, page in enumerate(self.processed):
-                save_path = f'{self.save_path}/{self.file_name}_{i}.' \
-                            f'{self.image_format}'
-                Image.fromarray(page).save(save_path)
+                file_name = get_file_name(self.file_path)
+                save_dir = f'{save_dir}/{file_name}_{i}.{self.image_format}'
+                Image.fromarray(page).save(save_dir)
         except NotADirectoryError:
             pass
 
