@@ -1,5 +1,5 @@
-pyqt5~=5.14
-pdf2image~=1.14.0
-numpy~=1.19.4
-setuptools~=50.3.2
-pillow~=8.0.1
+pyqt5
+pdf2image
+numpy
+setuptools
+pillow
