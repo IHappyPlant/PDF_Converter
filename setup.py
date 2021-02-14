@@ -8,16 +8,16 @@ required_packages = [
     'pyqt5',
     'pdf2image',
     'numpy',
-    'opencv-Python'
+    'pillow'
 ]
 
 setup(
     name='pdf_converter',
-    version='1.0',
+    version='1.1',
     url='https://github.com/IHappyPlant/Pdf_Converter',
     author='IHappyPlant',
     author_email='karuk1998@yandex.ru',
-    license='GPLv3',
+    license='MIT',
     description='GUI app to converting files from PDF to image formats',
     packages=["converter"],
     install_requires=required_packages,
@@ -28,7 +28,8 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.8'
+        'Programming Language :: Python :: 3.9',
         'Topic :: Utilities',
         'Operating System :: POSIX :: Linux',
         'Natural Language :: English',

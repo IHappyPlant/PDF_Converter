@@ -1,9 +1,8 @@
 """This module contains utility functions for pdf converter"""
 from os.path import basename, splitext
 
-import cv2
 from numpy import array
-from pdf2image import convert_from_bytes
+from pdf2image import convert_from_path
 
 
 def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
@@ -25,32 +24,25 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
     transparent = color_mode == 'rgba'
     grayscale = color_mode == 'grayscale'
 
-    with open(file, 'rb') as f:
-        file = f.read()
-    # Convert document to Pillow images
-    converted = convert_from_bytes(file, dpi, fmt=image_format,
-                                   transparent=transparent,
-                                   grayscale=grayscale)
+    # Convert document to list of Pillow images
+    converted = convert_from_path(file, dpi, fmt=image_format,
+                                  transparent=transparent,
+                                  grayscale=grayscale)
     # Convert colors from RGB(A) to BGR(A)
     if color_mode == 'rgb':
-        converted = [cv2.cvtColor(array(im), cv2.COLOR_RGB2BGR)
-                     for im in converted]
+        converted = [im.convert('RGB') for im in converted]
     elif color_mode == 'rgba':
-        if image_format != 'jpg':
-            converted = [cv2.cvtColor(array(im), cv2.COLOR_RGBA2BGRA)
-                         for im in converted]
+        if image_format == 'png':
+            converted = [im.convert('RGBA') for im in converted]
         else:
-            converted = [cv2.cvtColor(array(im), cv2.COLOR_RGB2BGR)
-                         for im in converted]
+            converted = [im.convert('RGB') for im in converted]
     elif color_mode == 'binary':
-        # Apply binary threshold to image
-        converted = [cv2.threshold(
-            cv2.cvtColor(array(im), cv2.COLOR_RGB2GRAY), 128, 255,
-            cv2.THRESH_BINARY)[1] for im in converted]
+        converted = [im.convert('1') for im in converted]
     else:
-        # Convert RGB to grayscale
-        converted = [cv2.cvtColor(array(im), cv2.COLOR_RGB2GRAY)
-                     for im in converted]
+        # Convert to grayscale
+        converted = [im.convert('L') for im in converted]
+
+    converted = [array(im) for im in converted]
     return converted
 
 
