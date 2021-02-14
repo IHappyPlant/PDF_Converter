@@ -43,6 +43,21 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         return int(self.dpi_box.currentText())
 
     @property
+    def color_format(self):
+        """
+        :return:
+            PyQT image color format based on value from color_mode_box
+        :rtype: int
+        """
+        # BGR888 for rgb format
+        color_format = QImage.Format_RGB888
+        if self.color_mode == 'rgba' and self.image_format == 'png':
+            color_format = QImage.Format_RGBA8888
+        elif self.color_mode == 'grayscale' or self.color_mode == 'binary':
+            color_format = QImage.Format_Grayscale8
+        return color_format
+
+    @property
     def pages_count(self):
         """
         :return: Number of document pages
@@ -120,17 +135,11 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         cur_img = self.processed[self.active_page_number - 1]
         channels = cur_img.shape[2] if len(cur_img.shape) > 2 else 1
 
-        # BGR888 for rgb format
-        color_format = QImage.Format_RGB888
-        if self.color_mode == 'rgba' and self.image_format == 'png':
-            color_format = QImage.Format_RGBA8888
-        elif self.color_mode == 'grayscale' or self.color_mode == 'binary':
-            color_format = QImage.Format_Grayscale8
-
-        img = QImage(cur_img, cur_img.shape[1], cur_img.shape[0],
-                     channels * cur_img.shape[1], color_format).smoothScaled(
+        qimg = QImage(
+            cur_img, cur_img.shape[1], cur_img.shape[0],
+            channels * cur_img.shape[1], self.color_format).smoothScaled(
             self.display_page_label.width(), self.display_page_label.height())
-        pixmap = QPixmap(img)
+        pixmap = QPixmap(qimg)
         self.display_page_label.setPixmap(pixmap)
         self._update_page_number_info()
 
