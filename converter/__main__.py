@@ -24,10 +24,6 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self.save_file_btn.clicked.connect(self.save_file)
         self.to_next_btn.clicked.connect(self.to_next_page)
         self.to_prev_btn.clicked.connect(self.to_prev_page)
-        self.dpi_box.currentTextChanged.connect(self.on_box_item_change)
-        self.color_mode_box.currentTextChanged.connect(self.on_box_item_change)
-        self.image_format_box.currentTextChanged.connect(
-            self.on_box_item_change)
         self.display_page_label.resizeEvent = self.on_display_page_resize
         self.file_path = None
         self.processed = None
@@ -75,11 +71,6 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         """
         if self.active_page_number:
             self.display_active_page()
-
-    def on_box_item_change(self):
-        """Handle changing active items in comboboxes"""
-        if not self.process_doc_btn.isEnabled() and self.file_path:
-            self.process_doc_btn.setDisabled(False)
 
     def select_file(self):
         """Set path to pdf file to handle and get its name"""
