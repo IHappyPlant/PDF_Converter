@@ -145,6 +145,11 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self.display_page_label.setPixmap(pixmap)
         self._update_page_number_info()
 
+        if self.active_page_number == self.pages_count:
+            self.to_next_btn.setDisabled(True)
+        elif self.active_page_number == 1:
+            self.to_prev_btn.setDisabled(True)
+
     def _update_page_number_info(self):
         """
         Update page numbers label text with currently active page
