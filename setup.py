@@ -1,6 +1,5 @@
-# coding=utf-8
 """
-This module contains code for deploying PDF converter application
+This module contains code for deploying PDF converter application.
 """
 from setuptools import setup
 

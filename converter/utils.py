@@ -1,4 +1,4 @@
-"""This module contains utility functions for pdf converter"""
+"""This module contains utility functions for pdf converter."""
 from os.path import basename, splitext
 
 from numpy import array
@@ -7,19 +7,16 @@ from pdf2image import convert_from_path
 
 def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
     """
-    Convert pdf file to selected format
+    Convert pdf file to selected format.
 
-    :param str file:
-        Path to PDF file that need to be converted
-    :param int dpi:
-        DPI of converter
-    :param str image_format:
-        format of output file. Possible formats: ['jpg', 'png']
-    :param str color_mode:
-        Color mode of output images
+    :param str file: Path to PDF file that need to be converted
+    :param int dpi: DPI of converter
+    :param str image_format: format of output file.
+        Possible formats: ['jpg', 'png']
+    :param str color_mode: Color mode of output images.
         Possible modes: ['rgb', 'rgba', 'grayscale', 'binary']
     :return: list of converted pages
-    :rtype: list of numpy.ndarray
+    :rtype: list[numpy.ndarray]
     """
     transparent = color_mode == 'rgba'
     grayscale = color_mode == 'grayscale'

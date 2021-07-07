@@ -1,4 +1,4 @@
-"""This module contains code for GUI of the converter"""
+"""This module contains code for GUI of the converter."""
 import sys
 from threading import Thread
 
@@ -42,8 +42,8 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
     @property
     def color_format(self):
         """
-        :return:
-            PyQT image color format based on value from color_mode_box
+        :return: PyQT image color format based on value from
+            color_mode_box
         :rtype: int
         """
         # BGR888 for rgb format
@@ -58,22 +58,21 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
     def pages_count(self):
         """
         :return: Number of document pages
-        :rtype: int
+        :rtype: int|None
         """
         return len(self.processed) if self.processed else None
 
     def on_display_page_resize(self, event):  # noqa
         """
-        Resize image in display_page_label when it is resizing
+        Resize image in display_page_label when it is resizing.
 
-        :param PyQt5.QtGui.QResizeEvent.QResizeEvent event:
-            resize event
+        :type event: PyQt5.QtGui.QResizeEvent.QResizeEvent
         """
         if self.active_page_number:
             self.display_active_page()
 
     def select_file(self):
-        """Set path to pdf file to handle and get its name"""
+        """Set path to pdf file to handle and get its name."""
         file_path = QFileDialog.getOpenFileUrl(caption='Select file')[0].path()
         if file_path.endswith('.pdf'):
             self.select_file_label.setText('File selected')
@@ -89,13 +88,14 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.save_file_btn.setDisabled(True)
 
     def _clear_page_label(self):
-        """Set pages info label to default state"""
+        """Set pages info label to default state."""
         self.display_page_label.clear()
         self.display_page_label.setStyleSheet("background-color: white;")
         self._update_page_number_info()
 
     def process_file(self):
         """Start a thread to convert selected pdf file to images."""
+
         def _convert_to_images():
             self.select_file_btn.setDisabled(True)
             self.process_doc_btn.setDisabled(True)
@@ -113,12 +113,14 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 
             self.select_file_btn.setEnabled(True)
             self.process_doc_btn.setEnabled(True)
+
         Thread(target=_convert_to_images).start()
 
     def save_file(self):
         """
         Start a thread to save images from pdf file to selected folder.
         """
+
         def _save():
             try:
                 save_dir = QFileDialog.getExistingDirectoryUrl(
@@ -130,10 +132,11 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
                     Image.fromarray(page).save(save_path)
             except NotADirectoryError:
                 pass
+
         Thread(target=_save).start()
 
     def display_active_page(self):
-        """Draw currently observed image in display_page_label"""
+        """Draw currently observed image in display_page_label."""
         cur_img = self.processed[self.active_page_number - 1]
         channels = cur_img.shape[2] if len(cur_img.shape) > 2 else 1
 
@@ -162,7 +165,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.page_numbers_label.setText('Page 0 of 0')
 
     def to_next_page(self):
-        """Draw next image from list of images taken from pdf"""
+        """Draw next image from list of images taken from pdf."""
         if self.active_page_number < self.pages_count:
             self.active_page_number += 1
             self.display_active_page()
@@ -172,7 +175,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.to_prev_btn.setDisabled(False)
 
     def to_prev_page(self):
-        """Draw previous image from list of images taken from pdf"""
+        """Draw previous image from list of images taken from pdf."""
         if self.active_page_number > 1:
             self.active_page_number -= 1
             self.display_active_page()
