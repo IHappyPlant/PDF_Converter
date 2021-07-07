@@ -11,9 +11,9 @@ required_packages = [
 ]
 
 setup(
-    name='pdf_converter',
-    version='1.1',
-    url='https://github.com/IHappyPlant/Pdf_Converter',
+    name='PdfConverter',
+    version='1.2',
+    url='https://github.com/IHappyPlant/PDF_Converter',
     author='IHappyPlant',
     author_email='karuk1998@yandex.ru',
     license='MIT',
@@ -29,6 +29,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8'
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
         'Topic :: Utilities',
         'Operating System :: POSIX :: Linux',
         'Natural Language :: English',
