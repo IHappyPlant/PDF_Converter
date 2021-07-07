@@ -1,5 +1,6 @@
 """This module contains code for GUI of the converter"""
 import sys
+from threading import Thread
 
 from PIL import Image
 from PyQt5.QtGui import QImage, QPixmap
@@ -103,32 +104,42 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self._update_page_number_info()
 
     def process_file(self):
-        """Convert selected pdf file to images"""
-        # TODO: run this function in separate thread
-        self.color_mode = self.color_mode_box.currentText().lower()
-        self.image_format = self.image_format_box.currentText().lower()
-        self.processed = convert(self.file_path, self.dpi, self.image_format,
-                                 self.color_mode)
+        """Start a thread to convert selected pdf file to images."""
+        def _convert_to_images():
+            self.select_file_btn.setDisabled(True)
+            self.process_doc_btn.setDisabled(True)
 
-        self.active_page_number = 1
-        self.save_file_btn.setDisabled(False)
-        if self.active_page_number != self.pages_count:
-            self.to_next_btn.setDisabled(False)
-        self.process_doc_btn.setDisabled(True)
-        self.display_active_page()
+            self.color_mode = self.color_mode_box.currentText().lower()
+            self.image_format = self.image_format_box.currentText().lower()
+            self.processed = convert(self.file_path, self.dpi,
+                                     self.image_format, self.color_mode)
+
+            self.active_page_number = 1
+            self.save_file_btn.setEnabled(True)
+            if self.active_page_number != self.pages_count:
+                self.to_next_btn.setEnabled(True)
+            self.display_active_page()
+
+            self.select_file_btn.setEnabled(True)
+            self.process_doc_btn.setEnabled(True)
+        Thread(target=_convert_to_images).start()
 
     def save_file(self):
-        """Save images from pdf file to selected folder"""
-        # TODO: run this function in separate thread
-        try:
-            save_dir = QFileDialog.getExistingDirectoryUrl(
-                caption='Select saving directory').toLocalFile()
-            for i, page in enumerate(self.processed):
-                file_name = get_file_name(self.file_path)
-                save_dir = f'{save_dir}/{file_name}_{i}.{self.image_format}'
-                Image.fromarray(page).save(save_dir)
-        except NotADirectoryError:
-            pass
+        """
+        Start a thread to save images from pdf file to selected folder.
+        """
+        def _save():
+            try:
+                save_dir = QFileDialog.getExistingDirectoryUrl(
+                    caption='Select saving directory').toLocalFile()
+                for i, page in enumerate(self.processed):
+                    file_name = get_file_name(self.file_path)
+                    save_path = \
+                        f'{save_dir}/{file_name}_{i}.{self.image_format}'
+                    Image.fromarray(page).save(save_path)
+            except NotADirectoryError:
+                pass
+        Thread(target=_save).start()
 
     def display_active_page(self):
         """Draw currently observed image in display_page_label"""
