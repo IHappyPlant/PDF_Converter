@@ -1,4 +1,5 @@
 """This module contains utility functions for pdf converter."""
+import os
 from os.path import basename, splitext
 
 from numpy import array
@@ -18,14 +19,16 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
     :return: list of converted pages
     :rtype: list[numpy.ndarray]
     """
+    cpu_count = os.cpu_count() or 1
+
     transparent = color_mode == 'rgba'
     grayscale = color_mode == 'grayscale'
 
     # Convert document to list of Pillow images
     converted = convert_from_path(file, dpi, fmt=image_format,
-                                  transparent=transparent,
-                                  grayscale=grayscale)
-    # Convert colors from RGB(A) to BGR(A)
+                                  transparent=transparent, grayscale=grayscale,
+                                  thread_count=cpu_count)
+
     if color_mode == 'rgb':
         converted = [im.convert('RGB') for im in converted]
     elif color_mode == 'rgba':
