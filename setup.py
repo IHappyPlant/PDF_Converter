@@ -12,7 +12,7 @@ required_packages = [
 
 setup(
     name='PdfConverter',
-    version='1.2',
+    version='1.1',
     url='https://github.com/IHappyPlant/PDF_Converter',
     author='IHappyPlant',
     author_email='karuk1998@yandex.ru',
