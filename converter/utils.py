@@ -42,8 +42,7 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
         # Convert to grayscale
         converted = [im.convert('L') for im in converted]
 
-    converted = [array(im) for im in converted]
-    return converted
+    return [array(im) for im in converted]
 
 
 def get_file_name(file_path):
