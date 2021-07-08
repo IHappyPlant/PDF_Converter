@@ -103,6 +103,8 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 
             self.color_mode = self.color_mode_box.currentText().lower()
             self.image_format = self.image_format_box.currentText().lower()
+
+            # TODO: reduce memory consumption in converting function
             self.processed = convert(self.file_path, self.dpi,
                                      self.image_format, self.color_mode)
 

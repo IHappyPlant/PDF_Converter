@@ -29,6 +29,7 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
                                   transparent=transparent, grayscale=grayscale,
                                   thread_count=cpu_count)
 
+    # TODO: add multiprocessing to this
     if color_mode == 'rgb':
         converted = [im.convert('RGB') for im in converted]
     elif color_mode == 'rgba':
