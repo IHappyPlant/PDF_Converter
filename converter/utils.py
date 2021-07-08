@@ -1,4 +1,5 @@
-"""This module contains utility functions for pdf converter"""
+"""This module contains utility functions for pdf converter."""
+import os
 from os.path import basename, splitext
 
 from numpy import array
@@ -7,28 +8,28 @@ from pdf2image import convert_from_path
 
 def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
     """
-    Convert pdf file to selected format
+    Convert pdf file to selected format.
 
-    :param str file:
-        Path to PDF file that need to be converted
-    :param int dpi:
-        DPI of converter
-    :param str image_format:
-        format of output file. Possible formats: ['jpg', 'png']
-    :param str color_mode:
-        Color mode of output images
+    :param str file: Path to PDF file that need to be converted
+    :param int dpi: DPI of converter
+    :param str image_format: format of output file.
+        Possible formats: ['jpg', 'png']
+    :param str color_mode: Color mode of output images.
         Possible modes: ['rgb', 'rgba', 'grayscale', 'binary']
     :return: list of converted pages
-    :rtype: list of numpy.ndarray
+    :rtype: list[numpy.ndarray]
     """
+    cpu_count = os.cpu_count() or 1
+
     transparent = color_mode == 'rgba'
     grayscale = color_mode == 'grayscale'
 
     # Convert document to list of Pillow images
     converted = convert_from_path(file, dpi, fmt=image_format,
-                                  transparent=transparent,
-                                  grayscale=grayscale)
-    # Convert colors from RGB(A) to BGR(A)
+                                  transparent=transparent, grayscale=grayscale,
+                                  thread_count=cpu_count)
+
+    # TODO: add multiprocessing to this
     if color_mode == 'rgb':
         converted = [im.convert('RGB') for im in converted]
     elif color_mode == 'rgba':
@@ -42,8 +43,7 @@ def convert(file, dpi=300, image_format='jpg', color_mode='rgb'):
         # Convert to grayscale
         converted = [im.convert('L') for im in converted]
 
-    converted = [array(im) for im in converted]
-    return converted
+    return [array(im) for im in converted]
 
 
 def get_file_name(file_path):

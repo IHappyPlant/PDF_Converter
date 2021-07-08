@@ -1,5 +1,7 @@
-"""This module contains code for GUI of the converter"""
+"""This module contains code for GUI of the converter."""
+import os.path
 import sys
+from threading import Thread
 
 from PIL import Image
 from PyQt5.QtGui import QImage, QPixmap
@@ -23,10 +25,6 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self.save_file_btn.clicked.connect(self.save_file)
         self.to_next_btn.clicked.connect(self.to_next_page)
         self.to_prev_btn.clicked.connect(self.to_prev_page)
-        self.dpi_box.currentTextChanged.connect(self.on_box_item_change)
-        self.color_mode_box.currentTextChanged.connect(self.on_box_item_change)
-        self.image_format_box.currentTextChanged.connect(
-            self.on_box_item_change)
         self.display_page_label.resizeEvent = self.on_display_page_resize
         self.file_path = None
         self.processed = None
@@ -45,8 +43,8 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
     @property
     def color_format(self):
         """
-        :return:
-            PyQT image color format based on value from color_mode_box
+        :return: PyQT image color format based on value from
+            color_mode_box
         :rtype: int
         """
         # BGR888 for rgb format
@@ -61,27 +59,21 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
     def pages_count(self):
         """
         :return: Number of document pages
-        :rtype: int
+        :rtype: int|None
         """
         return len(self.processed) if self.processed else None
 
     def on_display_page_resize(self, event):  # noqa
         """
-        Resize image in display_page_label when it is resizing
+        Resize image in display_page_label when it is resizing.
 
-        :param PyQt5.QtGui.QResizeEvent.QResizeEvent event:
-            resize event
+        :type event: PyQt5.QtGui.QResizeEvent.QResizeEvent
         """
         if self.active_page_number:
             self.display_active_page()
 
-    def on_box_item_change(self):
-        """Handle changing active items in comboboxes"""
-        if not self.process_doc_btn.isEnabled() and self.file_path:
-            self.process_doc_btn.setDisabled(False)
-
     def select_file(self):
-        """Set path to pdf file to handle and get its name"""
+        """Set path to pdf file to handle and get its name."""
         file_path = QFileDialog.getOpenFileUrl(caption='Select file')[0].path()
         if file_path.endswith('.pdf'):
             self.select_file_label.setText('File selected')
@@ -97,41 +89,65 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.save_file_btn.setDisabled(True)
 
     def _clear_page_label(self):
-        """Set pages info label to default state"""
+        """Set pages info label to default state."""
         self.display_page_label.clear()
         self.display_page_label.setStyleSheet("background-color: white;")
         self._update_page_number_info()
 
     def process_file(self):
-        """Convert selected pdf file to images"""
-        # TODO: run this function in separate thread
-        self.color_mode = self.color_mode_box.currentText().lower()
-        self.image_format = self.image_format_box.currentText().lower()
-        self.processed = convert(self.file_path, self.dpi, self.image_format,
-                                 self.color_mode)
+        """Start a thread to convert selected pdf file to images."""
 
-        self.active_page_number = 1
-        self.save_file_btn.setDisabled(False)
-        if self.active_page_number != self.pages_count:
-            self.to_next_btn.setDisabled(False)
-        self.process_doc_btn.setDisabled(True)
-        self.display_active_page()
+        def _convert_to_images():
+            self.select_file_btn.setDisabled(True)
+            self.process_doc_btn.setDisabled(True)
+
+            self.color_mode = self.color_mode_box.currentText().lower()
+            self.image_format = self.image_format_box.currentText().lower()
+
+            # TODO: reduce memory consumption in converting function
+            self.processed = convert(self.file_path, self.dpi,
+                                     self.image_format, self.color_mode)
+
+            self.active_page_number = 1
+            self.save_file_btn.setEnabled(True)
+            if self.active_page_number != self.pages_count:
+                self.to_next_btn.setEnabled(True)
+            self.display_active_page()
+
+            self.select_file_btn.setEnabled(True)
+            self.process_doc_btn.setEnabled(True)
+
+        Thread(target=_convert_to_images).start()
 
     def save_file(self):
-        """Save images from pdf file to selected folder"""
-        # TODO: run this function in separate thread
-        try:
-            save_dir = QFileDialog.getExistingDirectoryUrl(
-                caption='Select saving directory').toLocalFile()
-            for i, page in enumerate(self.processed):
-                file_name = get_file_name(self.file_path)
-                save_dir = f'{save_dir}/{file_name}_{i}.{self.image_format}'
-                Image.fromarray(page).save(save_dir)
-        except NotADirectoryError:
-            pass
+        """
+        Start a thread to save images from pdf file to selected folder.
+        """
+
+        def _save():
+            self.process_doc_btn.setDisabled(True)
+            self.save_file_btn.setDisabled(True)
+            self.select_file_btn.setDisabled(True)
+            try:
+                save_dir = QFileDialog.getExistingDirectoryUrl(
+                    caption='Select saving directory').toLocalFile()
+                if save_dir:
+                    file_name = get_file_name(self.file_path)
+                    image_format = self.image_format
+                    for i, page in enumerate(self.processed):
+                        save_name = f'{file_name}_{i}.{image_format}'
+                        save_path = os.path.join(save_dir, save_name)
+                        Image.fromarray(page).save(save_path)
+            except NotADirectoryError:
+                pass
+            self.process_doc_btn.setEnabled(True)
+            self.save_file_btn.setEnabled(True)
+            self.select_file_btn.setEnabled(True)
+
+        Thread(target=_save).start()
 
     def display_active_page(self):
-        """Draw currently observed image in display_page_label"""
+        """Draw currently observed image in display_page_label."""
         cur_img = self.processed[self.active_page_number - 1]
         channels = cur_img.shape[2] if len(cur_img.shape) > 2 else 1
 
@@ -142,6 +158,11 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         pixmap = QPixmap(qimg)
         self.display_page_label.setPixmap(pixmap)
         self._update_page_number_info()
+
+        if self.active_page_number == self.pages_count:
+            self.to_next_btn.setDisabled(True)
+        elif self.active_page_number == 1:
+            self.to_prev_btn.setDisabled(True)
 
     def _update_page_number_info(self):
         """
@@ -155,7 +176,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.page_numbers_label.setText('Page 0 of 0')
 
     def to_next_page(self):
-        """Draw next image from list of images taken from pdf"""
+        """Draw next image from list of images taken from pdf."""
         if self.active_page_number < self.pages_count:
             self.active_page_number += 1
             self.display_active_page()
@@ -165,7 +186,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.to_prev_btn.setDisabled(False)
 
     def to_prev_page(self):
-        """Draw previous image from list of images taken from pdf"""
+        """Draw previous image from list of images taken from pdf."""
         if self.active_page_number > 1:
             self.active_page_number -= 1
             self.display_active_page()
