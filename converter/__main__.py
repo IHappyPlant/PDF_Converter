@@ -1,4 +1,5 @@
 """This module contains code for GUI of the converter."""
+import os.path
 import sys
 from threading import Thread
 
@@ -122,16 +123,24 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         """
 
         def _save():
+            self.process_doc_btn.setDisabled(True)
+            self.save_file_btn.setDisabled(True)
+            self.select_file_btn.setDisabled(True)
             try:
                 save_dir = QFileDialog.getExistingDirectoryUrl(
                     caption='Select saving directory').toLocalFile()
-                for i, page in enumerate(self.processed):
+                if save_dir:
                     file_name = get_file_name(self.file_path)
-                    save_path = \
-                        f'{save_dir}/{file_name}_{i}.{self.image_format}'
-                    Image.fromarray(page).save(save_path)
+                    image_format = self.image_format
+                    for i, page in enumerate(self.processed):
+                        save_name = f'{file_name}_{i}.{image_format}'
+                        save_path = os.path.join(save_dir, save_name)
+                        Image.fromarray(page).save(save_path)
             except NotADirectoryError:
                 pass
+            self.process_doc_btn.setEnabled(True)
+            self.save_file_btn.setEnabled(True)
+            self.select_file_btn.setEnabled(True)
 
         Thread(target=_save).start()
 
