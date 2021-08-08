@@ -82,11 +82,9 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 
             # enable document processing button and boxes and disable
             # save button
-            self.dpi_box.setDisabled(False)
-            self.color_mode_box.setDisabled(False)
-            self.image_format_box.setDisabled(False)
-            self.process_doc_btn.setDisabled(False)
-            self.save_file_btn.setDisabled(True)
+            self._enable_buttons(self.dpi_box, self.color_mode_box,
+                                 self.image_format_box, self.process_doc_btn)
+            self._disable_buttons(self.save_file_btn)
 
     def _clear_page_label(self):
         """Set pages info label to default state."""
@@ -98,8 +96,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         """Start a thread to convert selected pdf file to images."""
 
         def _convert_to_images():
-            self.select_file_btn.setDisabled(True)
-            self.process_doc_btn.setDisabled(True)
+            self._disable_buttons(self.select_file_btn, self.process_doc_btn)
 
             self.color_mode = self.color_mode_box.currentText().lower()
             self.image_format = self.image_format_box.currentText().lower()
@@ -109,13 +106,12 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
                                      self.image_format, self.color_mode)
 
             self.active_page_number = 1
-            self.save_file_btn.setEnabled(True)
+            self._enable_buttons(self.save_file_btn)
             if self.active_page_number != self.pages_count:
-                self.to_next_btn.setEnabled(True)
+                self._enable_buttons(self.to_next_btn)
             self.display_active_page()
 
-            self.select_file_btn.setEnabled(True)
-            self.process_doc_btn.setEnabled(True)
+            self._enable_buttons(self.select_file_btn, self.process_doc_btn)
 
         Thread(target=_convert_to_images).start()
 
@@ -125,20 +121,17 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         """
 
         def _save(save_dir):
-            self.process_doc_btn.setDisabled(True)
-            self.save_file_btn.setDisabled(True)
-            self.select_file_btn.setDisabled(True)
+            self._disable_buttons(self.process_doc_btn, self.save_file_btn,
+                                  self.select_file_btn)
 
             file_name = get_file_name(self.file_path)
-            image_format = self.image_format
             for i, page in enumerate(self.processed):
-                save_name = f'{file_name}_{i}.{image_format}'
+                save_name = f'{file_name}_{i}.{self.image_format}'
                 save_path = os.path.join(save_dir, save_name)
                 Image.fromarray(page).save(save_path)
 
-            self.process_doc_btn.setEnabled(True)
-            self.save_file_btn.setEnabled(True)
-            self.select_file_btn.setEnabled(True)
+            self._enable_buttons(self.process_doc_btn, self.save_file_btn,
+                                 self.select_file_btn)
 
         try:
             save_dir_ = QFileDialog.getExistingDirectoryUrl(
@@ -161,9 +154,9 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self._update_page_number_info()
 
         if self.active_page_number == self.pages_count:
-            self.to_next_btn.setDisabled(True)
+            self._disable_buttons(self.to_next_btn)
         elif self.active_page_number == 1:
-            self.to_prev_btn.setDisabled(True)
+            self._disable_buttons(self.to_prev_btn)
 
     def _update_page_number_info(self):
         """
@@ -182,9 +175,9 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.active_page_number += 1
             self.display_active_page()
         if self.active_page_number == self.pages_count:
-            self.to_next_btn.setDisabled(True)
+            self._disable_buttons(self.to_next_btn)
         if not self.to_prev_btn.isEnabled():
-            self.to_prev_btn.setDisabled(False)
+            self._enable_buttons(self.to_prev_btn)
 
     def to_prev_page(self):
         """Draw previous image from list of images taken from pdf."""
@@ -192,9 +185,19 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             self.active_page_number -= 1
             self.display_active_page()
         if self.active_page_number == 1:
-            self.to_prev_btn.setDisabled(True)
+            self._disable_buttons(self.to_prev_btn)
         if not self.to_next_btn.isEnabled():
-            self.to_next_btn.setDisabled(False)
+            self._enable_buttons(self.to_next_btn)
+
+    @staticmethod
+    def _enable_buttons(*buttons):
+        for b in buttons:
+            b.setEnabled(True)
+
+    @staticmethod
+    def _disable_buttons(*buttons):
+        for b in buttons:
+            b.setDisabled(True)
 
 
 if __name__ == '__main__':
