@@ -124,27 +124,28 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         Start a thread to save images from pdf file to selected folder.
         """
 
-        def _save():
+        def _save(save_dir):
             self.process_doc_btn.setDisabled(True)
             self.save_file_btn.setDisabled(True)
             self.select_file_btn.setDisabled(True)
-            try:
-                save_dir = QFileDialog.getExistingDirectoryUrl(
-                    caption='Select saving directory').toLocalFile()
-                if save_dir:
-                    file_name = get_file_name(self.file_path)
-                    image_format = self.image_format
-                    for i, page in enumerate(self.processed):
-                        save_name = f'{file_name}_{i}.{image_format}'
-                        save_path = os.path.join(save_dir, save_name)
-                        Image.fromarray(page).save(save_path)
-            except NotADirectoryError:
-                pass
+
+            file_name = get_file_name(self.file_path)
+            image_format = self.image_format
+            for i, page in enumerate(self.processed):
+                save_name = f'{file_name}_{i}.{image_format}'
+                save_path = os.path.join(save_dir, save_name)
+                Image.fromarray(page).save(save_path)
+
             self.process_doc_btn.setEnabled(True)
             self.save_file_btn.setEnabled(True)
             self.select_file_btn.setEnabled(True)
 
-        Thread(target=_save).start()
+        try:
+            save_dir_ = QFileDialog.getExistingDirectoryUrl(
+                caption='Select saving directory').toLocalFile()
+            Thread(target=_save, args=[save_dir_]).start()
+        except NotADirectoryError:
+            pass
 
     def display_active_page(self):
         """Draw currently observed image in display_page_label."""
