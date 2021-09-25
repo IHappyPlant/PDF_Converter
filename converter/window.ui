@@ -14,7 +14,7 @@
    <string>Converter</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,7">
     <item>
      <layout class="QVBoxLayout" name="buttons_layout">
       <item>
@@ -168,11 +168,6 @@
           <item>
            <property name="text">
             <string>Grayscale</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Binary</string>
            </property>
           </item>
          </widget>
