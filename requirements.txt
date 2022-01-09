@@ -5,3 +5,4 @@ pillow
 
 setuptools
 wheel
+pyinstaller
