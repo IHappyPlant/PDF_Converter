@@ -2,5 +2,6 @@ pyqt5
 pdf2image
 numpy
 pillow
+
 setuptools
 wheel

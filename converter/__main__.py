@@ -89,8 +89,8 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
     def select_file(self):
         """Set path to pdf file to handle and get its name."""
         file_path = QFileDialog.getOpenFileUrl(caption='Select file')[0].path()
-        file_path = self.fix_windows_path(file_path)
-        if file_path.endswith('.pdf'):
+        if file_path is not None and file_path.endswith('.pdf'):
+            file_path = self.fix_windows_path(file_path)
             self.select_file_label.setText('File selected')
             self.setWindowTitle(f"Converter - {os.path.basename(file_path)}")
             self.file_path = file_path
@@ -161,7 +161,8 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         try:
             save_dir_ = QFileDialog.getExistingDirectoryUrl(
                 caption='Select saving directory').toLocalFile()
-            Thread(target=self._save, args=[save_dir_]).start()
+            if save_dir_ is not None:
+                Thread(target=self._save, args=[save_dir_]).start()
         except NotADirectoryError:
             pass
 
