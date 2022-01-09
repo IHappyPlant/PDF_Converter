@@ -46,9 +46,9 @@ for Windows.
 This will generate "dist" directory in the repository root with single 
 executable file inside.
 
-**Warning**: For now, only building binary for Linux is supported. On Windows, for unknown
-reason PyInstaller can't build executable when running from venv. It works
-correctly only if packages installed in global environment.
+**Warning**: For now, only building binary for Linux is supported. On Windows, 
+for unknown reason PyInstaller can't build executable when running from venv. 
+It works correctly only if packages installed in global environment.
 
 ### Windows specific
 For Windows, you must also download 
