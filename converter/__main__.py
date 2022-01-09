@@ -71,9 +71,25 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         if self.active_page_number:
             self.display_active_page()
 
+    @staticmethod
+    def fix_windows_path(path):
+        """
+        For unknown reason, call QFileDialog.getOpenFileUrl()[0].path()
+        in Windows returns path with leading slash.
+        So, check if OS is Windows, and remove leading slash
+        from path if so.
+
+        :param str path: path to file
+        :returns: fixed path
+        :rtype: str
+        """
+        if os.name == "nt" and path.startswith("/"):
+            return path[1:]
+
     def select_file(self):
         """Set path to pdf file to handle and get its name."""
         file_path = QFileDialog.getOpenFileUrl(caption='Select file')[0].path()
+        file_path = self.fix_windows_path(file_path)
         if file_path.endswith('.pdf'):
             self.select_file_label.setText('File selected')
             self.setWindowTitle(f"Converter - {os.path.basename(file_path)}")
