@@ -5,3 +5,7 @@ pillow
 
 setuptools
 wheel
+
+pytest
+pytest-qt
+pytest-cov
