@@ -1,9 +1,8 @@
 """This module contains code for GUI of the converter."""
 import os.path
-import sys
+import shutil
 from threading import Thread
 
-from PIL import Image
 from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMainWindow
 
@@ -47,7 +46,6 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
             color_mode_box
         :rtype: int
         """
-        # BGR888 for rgb format
         color_format = QImage.Format_RGB888
         if self.color_mode == 'rgba' and self.image_format == 'png':
             color_format = QImage.Format_RGBA8888
@@ -63,7 +61,8 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         """
         return len(self.processed) if self.processed else None
 
-    def on_display_page_resize(self, event):  # noqa
+    # noinspection PyUnusedLocal
+    def on_display_page_resize(self, event):
         """
         Resize image in display_page_label when it is resizing.
 
@@ -72,19 +71,48 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         if self.active_page_number:
             self.display_active_page()
 
+    @staticmethod
+    def fix_windows_path(path):
+        """
+        For unknown reason, call QFileDialog.getOpenFileUrl()[0].path()
+        in Windows returns path with leading slash.
+        So, check if OS is Windows, and remove leading slash
+        from path if so.
+
+        :param str path: path to file
+        :returns: fixed path
+        :rtype: str
+        """
+        if os.name == "nt" and path.startswith("/"):
+            return path[1:]
+
     def select_file(self):
         """Set path to pdf file to handle and get its name."""
         file_path = QFileDialog.getOpenFileUrl(caption='Select file')[0].path()
-        if file_path.endswith('.pdf'):
+        if file_path is not None and file_path.endswith('.pdf'):
+            file_path = self.fix_windows_path(file_path)
             self.select_file_label.setText('File selected')
+            self.setWindowTitle(f"Converter - {os.path.basename(file_path)}")
             self.file_path = file_path
-            self._clear_page_label()
+            self._restore_state()
 
-            # enable document processing button and boxes and disable
-            # save button
-            self._enable_buttons(self.dpi_box, self.color_mode_box,
-                                 self.image_format_box, self.process_doc_btn)
-            self._disable_buttons(self.save_file_btn)
+    def _restore_state(self):
+        """
+        Clear all objects that refer to previous selected file,
+        restore program to default state.
+        """
+        self.processed = None
+        self.image_format = None
+        self.active_page_number = None
+        self.color_mode = None
+        self._clear_page_label()
+
+        # enable document processing button and boxes and disable
+        # save button
+        self._enable_buttons(self.dpi_box, self.color_mode_box,
+                             self.image_format_box, self.process_doc_btn)
+        self._disable_buttons(self.to_next_btn, self.to_prev_btn,
+                              self.save_file_btn)
 
     def _clear_page_label(self):
         """Set pages info label to default state."""
@@ -92,65 +120,62 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         self.display_page_label.setStyleSheet("background-color: white;")
         self._update_page_number_info()
 
+    def _convert_to_images(self):
+        self._disable_buttons(self.select_file_btn, self.process_doc_btn)
+
+        self.color_mode = self.color_mode_box.currentText().lower()
+        self.image_format = self.image_format_box.currentText().lower()
+
+        self.processed = convert(self.file_path, self.dpi,
+                                 self.image_format, self.color_mode)
+
+        self.active_page_number = 1
+        self._enable_buttons(self.save_file_btn)
+        if self.active_page_number != self.pages_count:
+            self._enable_buttons(self.to_next_btn)
+        self.display_active_page()
+
+        self._enable_buttons(self.select_file_btn, self.process_doc_btn)
+
     def process_file(self):
-        """Start a thread to convert selected pdf file to images."""
+        """Start a thread to convert selected pdf file to image."""
+        Thread(target=self._convert_to_images).start()
 
-        def _convert_to_images():
-            self._disable_buttons(self.select_file_btn, self.process_doc_btn)
+    def _save(self, save_dir):
+        self._disable_buttons(self.process_doc_btn, self.save_file_btn,
+                              self.select_file_btn)
 
-            self.color_mode = self.color_mode_box.currentText().lower()
-            self.image_format = self.image_format_box.currentText().lower()
+        file_name = get_file_name(self.file_path)
+        for i, page in enumerate(self.processed):
+            save_name = f'{file_name}_{i}.{self.image_format}'
+            save_path = os.path.join(save_dir, save_name)
+            shutil.copy(page, save_path)
 
-            # TODO: reduce memory consumption in converting function
-            self.processed = convert(self.file_path, self.dpi,
-                                     self.image_format, self.color_mode)
-
-            self.active_page_number = 1
-            self._enable_buttons(self.save_file_btn)
-            if self.active_page_number != self.pages_count:
-                self._enable_buttons(self.to_next_btn)
-            self.display_active_page()
-
-            self._enable_buttons(self.select_file_btn, self.process_doc_btn)
-
-        Thread(target=_convert_to_images).start()
+        self._enable_buttons(self.process_doc_btn, self.save_file_btn,
+                             self.select_file_btn)
 
     def save_file(self):
         """
         Start a thread to save images from pdf file to selected folder.
         """
-
-        def _save(save_dir):
-            self._disable_buttons(self.process_doc_btn, self.save_file_btn,
-                                  self.select_file_btn)
-
-            file_name = get_file_name(self.file_path)
-            for i, page in enumerate(self.processed):
-                save_name = f'{file_name}_{i}.{self.image_format}'
-                save_path = os.path.join(save_dir, save_name)
-                Image.fromarray(page).save(save_path)
-
-            self._enable_buttons(self.process_doc_btn, self.save_file_btn,
-                                 self.select_file_btn)
-
         try:
             save_dir_ = QFileDialog.getExistingDirectoryUrl(
                 caption='Select saving directory').toLocalFile()
-            Thread(target=_save, args=[save_dir_]).start()
+            if save_dir_ is not None:
+                Thread(target=self._save, args=[save_dir_]).start()
         except NotADirectoryError:
             pass
 
     def display_active_page(self):
         """Draw currently observed image in display_page_label."""
-        cur_img = self.processed[self.active_page_number - 1]
+        cur_img = self.processed.read_by_index(self.active_page_number - 1)
         channels = cur_img.shape[2] if len(cur_img.shape) > 2 else 1
 
         qimg = QImage(
             cur_img, cur_img.shape[1], cur_img.shape[0],
             channels * cur_img.shape[1], self.color_format).smoothScaled(
             self.display_page_label.width(), self.display_page_label.height())
-        pixmap = QPixmap(qimg)
-        self.display_page_label.setPixmap(pixmap)
+        self.display_page_label.setPixmap(QPixmap(qimg))
         self._update_page_number_info()
 
         if self.active_page_number == self.pages_count:
@@ -161,7 +186,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
     def _update_page_number_info(self):
         """
         Update page numbers label text with currently active page
-        number and pages count it it exists. Else, clear label text.
+        number and pages count it exists. Else, set default label text.
         """
         if self.active_page_number and self.pages_count:
             self.page_numbers_label.setText(
@@ -201,7 +226,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 
 
 if __name__ == '__main__':
-    app = QApplication(sys.argv)
+    app = QApplication([])
     window_ = ConverterGUI()
     window_.show()
     app.exec_()
