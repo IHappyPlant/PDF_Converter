@@ -30,12 +30,16 @@ setup(
         'Programming Language :: Python :: 3.8'
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: Implementation :: CPython",
         'Topic :: Utilities',
+        "Operating System :: Microsoft :: Windows",
         'Operating System :: POSIX :: Linux',
         'Natural Language :: English',
         'Environment :: X11 Applications :: Qt',
         'Intended Audience :: Developers',
         'Intended Audience :: End Users/Desktop',
-        'Intended Audience :: Education'
+        'Intended Audience :: Education',
+        "Topic :: Scientific/Engineering :: Image Processing"
     ]
 )
