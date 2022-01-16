@@ -229,5 +229,9 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
 if __name__ == '__main__':
     app = QApplication([])
     window_ = ConverterGUI()
-    window_.show()
-    app.exec_()
+    try:
+        window_.show()
+        app.exec_()
+    finally:
+        if window_.processed:
+            window_.processed.remove()
