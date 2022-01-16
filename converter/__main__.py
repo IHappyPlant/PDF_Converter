@@ -85,6 +85,7 @@ class ConverterGUI(QMainWindow, window.Ui_MainWindow):
         """
         if os.name == "nt" and path.startswith("/"):
             return path[1:]
+        return path
 
     def select_file(self):
         """Set path to pdf file to handle and get its name."""
